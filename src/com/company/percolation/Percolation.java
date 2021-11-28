@@ -6,7 +6,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     private boolean[][] square;
     private final int size;
-    private final WeightedQuickUnionUF uf;
+    private final WeightedQuickUnionUF ufPercolate;
+    private final WeightedQuickUnionUF ufFull;
     private final int vtop;
     private final int vbot;
 
@@ -17,7 +18,8 @@ public class Percolation {
             throw new IllegalArgumentException("wrong grid size");
         }
         square = new boolean[n][n];
-        uf = new WeightedQuickUnionUF(n * n + 2);
+        ufPercolate = new WeightedQuickUnionUF(n * n + 2);
+        ufFull = new WeightedQuickUnionUF(n * n + 1);
         size = n;
         vtop = n * n;
         vbot = vtop + 1;
@@ -50,11 +52,12 @@ public class Percolation {
         square[row - 1][col - 1] = true;
 
         if (row == 1) {
-            uf.union(index(1, col), vtop);
+            ufPercolate.union(index(1, col), vtop);
+            ufFull.union(index(1, col), vtop);
         }
 
         if (row == size) {
-            uf.union(index(size, col), vbot);
+            ufPercolate.union(index(size, col), vbot);
         }
 
         Pair left = new Pair(0, -1);
@@ -66,7 +69,8 @@ public class Percolation {
             int destRow = row + offset.r;
             int destCol = col + offset.c;
             if (isInbound(destRow, destCol) && isOpen(destRow, destCol)) {
-                uf.union(index(row, col), index(destRow, destCol));
+                ufPercolate.union(index(row, col), index(destRow, destCol));
+                ufFull.union(index(row, col), index(destRow, destCol));
             }
         }
 
@@ -93,7 +97,7 @@ public class Percolation {
         if (!isOpen(row, col)) {
             return false;
         }
-        return uf.find(index(row, col)) == uf.find(vtop);
+        return ufFull.find(index(row, col)) == ufFull.find(vtop);
     }
 
     // returns the number of open sites
@@ -111,7 +115,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return uf.find(vbot) == uf.find(vtop);
+        return ufPercolate.find(vbot) == ufPercolate.find(vtop);
     }
 
     // convert row column to #
