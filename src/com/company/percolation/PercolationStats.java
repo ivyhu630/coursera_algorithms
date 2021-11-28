@@ -4,10 +4,12 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
-    double[] percolationResult;
-    int numTrials;
+    private final double[] percolationResult;
+    private final int numTrials;
 
-    // perform independent trials on an n-by-n grid
+    private final double CONFIDENCE_MULT = 1.96;
+
+    // perform independent trials on an n-by-n gridbackwash with predetermined sites
     public PercolationStats(int n, int trials) {
         if (trials < 1) {
             throw new IllegalArgumentException("wrong trail size");
@@ -36,12 +38,12 @@ public class PercolationStats {
 
     // low endpoint of 95% confidence interval
     public double confidenceLo() {
-        return mean() - 1.96 * stddev() / Math.sqrt(numTrials);
+        return mean() - CONFIDENCE_MULT * stddev() / Math.sqrt(numTrials);
     }
 
     // high endpoint of 95% confidence interval
     public double confidenceHi() {
-        return mean() + 1.96 * stddev() / Math.sqrt(numTrials);
+        return mean() + CONFIDENCE_MULT * stddev() / Math.sqrt(numTrials);
     }
 
     // test client (see below)

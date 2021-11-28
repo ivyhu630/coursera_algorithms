@@ -4,11 +4,11 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    boolean[][] square;
-    int size;
-    WeightedQuickUnionUF uf;
-    int vtop;
-    int vbot;
+    private boolean[][] square;
+    private final int size;
+    private final WeightedQuickUnionUF uf;
+    private final int vtop;
+    private final int vbot;
 
 
     // creates n-by-n grid, with all sites initially blocked
@@ -28,13 +28,13 @@ public class Percolation {
         }
     }
 
-    class Pair {
+    private class Pair {
         int r;
         int c;
 
-        Pair(int r_, int c_) {
-            r = r_;
-            c = c_;
+        Pair(int rParam, int cParam) {
+            r = rParam;
+            c = cParam;
         }
     }
 
@@ -62,9 +62,9 @@ public class Percolation {
         Pair up = new Pair(-1, 0);
         Pair down = new Pair(1, 0);
         Pair[] offsets = {left, right, up, down};
-        for (Pair o : offsets) {
-            int destRow = row + o.r;
-            int destCol = col + o.c;
+        for (Pair offset : offsets) {
+            int destRow = row + offset.r;
+            int destCol = col + offset.c;
             if (isInbound(destRow, destCol) && isOpen(destRow, destCol)) {
                 uf.union(index(row, col), index(destRow, destCol));
             }
@@ -119,11 +119,11 @@ public class Percolation {
         return ((row - 1) * size + col - 1);
     }
 
-    public void print() {
+    private void print() {
         System.out.println("--------------");
         for (int i = 1; i <= size; ++i) {
             for (int j = 1; j <= size; ++j) {
-                System.out.printf((isOpen(i, j) ? "o" : "x") + " ");
+                System.out.print((isOpen(i, j) ? "o" : "x") + " ");
             }
             System.out.println();
         }
@@ -137,5 +137,6 @@ public class Percolation {
             p.open(StdRandom.uniform(1, n + 1), StdRandom.uniform(1, n + 1));
             p.print();
         }
+        assert p.percolates();
     }
 }
