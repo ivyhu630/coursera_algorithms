@@ -131,7 +131,7 @@ public class Percolation {
 
     // test client (optional)
     public static void main(String[] args) {
-        int n = 5;
+        int n = 4;
         Percolation p = new Percolation(n);
         while (!p.percolates()) {
             p.open(StdRandom.uniform(1, n + 1), StdRandom.uniform(1, n + 1));
