@@ -1,13 +1,11 @@
 package com.company.Queue;
 
-import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public class Deque<Item> implements Iterable<Item> {
-    private Node first, last;
+    private Node first, last = null;
     private int counter;
 
     private class Node {
@@ -22,7 +20,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     // is the deque empty?
     public boolean isEmpty() {
-        return first == null;
+        return size() == 0;
     }
 
     // return the number of items on the deque
@@ -35,7 +33,7 @@ public class Deque<Item> implements Iterable<Item> {
         if (item == null) {
             throw new IllegalArgumentException("require input");
         }
-        if (first == null) {
+        if (isEmpty()) {
             first = new Node();
             first.item = item;
             last = first;
@@ -47,9 +45,6 @@ public class Deque<Item> implements Iterable<Item> {
         first.item = item;
         first.next = second;
         second.prev = first;
-        if (last == null) {
-            last = first;
-        }
         counter++;
 
     }
@@ -64,7 +59,7 @@ public class Deque<Item> implements Iterable<Item> {
         last.item = item;
         last.next = null;
         last.prev = oldLast;
-        if (isEmpty()) first = last;
+        if (first == null) first = last;
         else {
             oldLast.next = last;
         }
@@ -74,29 +69,34 @@ public class Deque<Item> implements Iterable<Item> {
 
     // remove and return the item from the front
     public Item removeFirst() {
-        if (size() == 0) {
-            throw new java.util.NoSuchElementException("deque is empty");
+        if (isEmpty()) {
+            throw new NoSuchElementException("deque is empty");
         }
         Item item = first.item;
         first = first.next;
-        first.prev = null;
-        if (isEmpty()) last = null;
+        if (first != null) {
+            first.prev = null;
+        } else {
+            last = null;
+        }
         --counter;
         return item;
-
     }
 
     // remove and return the item from the back
     public Item removeLast() {
-        if (size() == 0) {
-            throw new java.util.NoSuchElementException("deque is empty");
+        if (isEmpty()) {
+            throw new NoSuchElementException("deque is empty");
         }
         Item item = last.item;
         last = last.prev;
-        last.next = null;
+        if (last != null) {
+            last.next = null;
+        } else {
+            first = null;
+        }
         --counter;
         return item;
-
     }
 
     // return an iterator over items in order from front to back
@@ -124,18 +124,18 @@ public class Deque<Item> implements Iterable<Item> {
 
     // unit testing (required)
     public static void main(String[] args) {
-        Deque<Integer> d = new Deque<>();
+        Deque<Integer> d = new Deque<Integer>();
 
         // empty
         assert d.isEmpty();
 
-        // illegal arg
-        try {
-            d.addFirst(null);
-            // should not get to below
-            assert false;
-        } catch (IllegalArgumentException e) {
-        }
+//        // illegal arg
+//        try {
+//            d.addFirst(null);
+//            // should not get to below
+//            assert false;
+//        } catch (IllegalArgumentException e) {
+//        }
         // add 2,1,3,4 then remove 2,4 check size to be 2 and element to match
         d.addFirst(1);
         d.addFirst(2);
