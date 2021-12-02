@@ -1,11 +1,11 @@
-package com.company.Queue;
+package com.company.queue;
 
 import edu.princeton.cs.algs4.StdIn;
 
 public class Permutation {
 
     public static void main(String[] args) {
-        RandomizedQueue<String> q = new RandomizedQueue<String>();
+        RandomizedQueue<String> q = new RandomizedQueue<>();
         while (!StdIn.isEmpty()) {
             q.enqueue(StdIn.readString());
         }

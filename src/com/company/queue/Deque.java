@@ -1,4 +1,4 @@
-package com.company.Queue;
+package com.company.queue;
 
 
 import java.util.Iterator;
@@ -124,12 +124,12 @@ public class Deque<Item> implements Iterable<Item> {
 
     // unit testing (required)
     public static void main(String[] args) {
-        Deque<Integer> d = new Deque<Integer>();
+        Deque<Integer> d = new Deque<>();
 
         // empty
         assert d.isEmpty();
 
-//        // illegal arg
+        // illegal arg
 //        try {
 //            d.addFirst(null);
 //            // should not get to below

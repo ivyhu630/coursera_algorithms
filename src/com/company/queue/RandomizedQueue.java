@@ -1,4 +1,4 @@
-package com.company.Queue;
+package com.company.queue;
 
 import edu.princeton.cs.algs4.StdRandom;
 
@@ -57,9 +57,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (size == 0) {
             throw new NoSuchElementException("queue is empty");
         }
-        int n = StdRandom.uniform(size);
-        Item res = s[n];
-        return res;
+        return s[StdRandom.uniform(size)];
     }
 
     // return an independent iterator over items in random order
@@ -87,15 +85,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private void resize(int capacity) {
         Item[] copy = (Item[]) new Object[capacity];
 
-        for (int i = 0; i < size; i++) {
-            copy[i] = s[i];
-        }
+        System.arraycopy(s, 0, copy, 0, size);
         s = copy;
     }
 
     // unit testing (required)
     public static void main(String[] args) {
-        RandomizedQueue<Integer> q = new RandomizedQueue<Integer>();
+        RandomizedQueue<Integer> q = new RandomizedQueue<>();
         q.enqueue(1);
         q.enqueue(2);
         q.enqueue(3);
