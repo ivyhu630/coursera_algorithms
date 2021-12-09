@@ -11,6 +11,7 @@ for f in $(ls); do
 done
 cd ..
 ZIPOUT=$DIR.zip
+rm -f $ZIPOUT
 zip -r $ZIPOUT $DIR
 rm -rf $DIR
 open .
