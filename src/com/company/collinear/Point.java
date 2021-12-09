@@ -1,4 +1,4 @@
-package com.company.CollinearPoints;
+package com.company.collinear;
 
 /******************************************************************************
  *  Compilation:  javac Point.java
@@ -84,20 +84,20 @@ public class Point implements Comparable<Point> {
     public int compareTo(Point that) {
         /* YOUR CODE HERE */
         if (this.y < that.y || (this.y == that.y && this.x < that.x)) {
-            return 1;
+            return -1;
         } else if (this.x == that.x && this.y == that.y) {
             return 0;
         }
-        return -1;
+        return 1;
     }
 
     private class SlopeComparator implements Comparator<Point> {
         @Override
         public int compare(Point o1, Point o2) {
-            if (Point.this.slopeTo(o2) > Point.this.slopeTo(o1)) {
-                return 1;
-            } else if (Point.this.slopeTo(o2) < Point.this.slopeTo(o1)) {
+            if (Point.this.slopeTo(o1) < Point.this.slopeTo(o2)) {
                 return -1;
+            } else if (Point.this.slopeTo(o1) > Point.this.slopeTo(o2)) {
+                return 1;
             }
             return 0;
         }

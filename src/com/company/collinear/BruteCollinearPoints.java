@@ -1,23 +1,29 @@
-package com.company.CollinearPoints;
+package com.company.collinear;
 
 import edu.princeton.cs.algs4.StdIn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BruteCollinearPoints {
     private final LineSegment[] segmentsArr;
 
     // finds all line segments containing 4 points
-    public BruteCollinearPoints(Point[] points) {
-        if (points == null) {
+    public BruteCollinearPoints(Point[] pointsParam) {
+        if (pointsParam == null) {
             throw new IllegalArgumentException("no input");
         }
-        ArrayList<LineSegment> segmentsList = new ArrayList<LineSegment>();
-        int length = points.length;
-        for (int p = 0; p < length; p++) {
-            if (points[p] == null) {
-                throw new IllegalArgumentException("null point");
+        for (Point p : pointsParam) {
+            if (p == null) {
+                throw new IllegalArgumentException("missing input");
             }
+        }
+        Point[] points = pointsParam.clone();
+
+        ArrayList<LineSegment> segmentsList = new ArrayList<>();
+        int length = points.length;
+        Arrays.sort(points);
+        for (int p = 0; p < length; p++) {
             for (int q = p + 1; q < length; q++) {
                 if (points[p].compareTo(points[q]) == 0) {
                     throw new IllegalArgumentException("repeated point");
@@ -35,7 +41,7 @@ public class BruteCollinearPoints {
                 }
             }
         }
-        segmentsArr = (LineSegment[]) segmentsList.toArray(new LineSegment[segmentsList.size()]);
+        segmentsArr = segmentsList.toArray(new LineSegment[segmentsList.size()]);
     }
 
     // the number of line segments
@@ -45,7 +51,7 @@ public class BruteCollinearPoints {
 
     // the line segments
     public LineSegment[] segments() {
-        return segmentsArr;
+        return Arrays.copyOf(segmentsArr, segmentsArr.length);
     }
 
     public static void main(String[] args) {

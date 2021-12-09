@@ -9,7 +9,7 @@
  *  DO NOT MODIFY THIS CODE.
  *
  *************************************************************************/
-package com.company.CollinearPoints;
+package com.company.collinear;
 
 public class LineSegment {
     private final Point p;   // one endpoint of this line segment
