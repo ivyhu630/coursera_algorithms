@@ -1,9 +1,14 @@
 package com.company.puzzle;
 
+import com.company.percolation.Percolation;
+
+import java.util.ArrayList;
+
 public class Board {
     private int[][] board;
     private int[][] goal;
     private int size;
+    private static final int BLANK = 0;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
@@ -20,7 +25,7 @@ public class Board {
                 ct++;
             }
         }
-        goal[size - 1][size - 1] = 0;
+        goal[size - 1][size - 1] = BLANK;
     }
 
     // string representation of this board
@@ -79,14 +84,10 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (board[i][j] != goal[i][j]) {
-                    return false;
-                }
-            }
+        if (this.hamming() == BLANK) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     // does this board equal y?
@@ -109,14 +110,61 @@ public class Board {
         return true;
     }
 
-    // TODO: all neighboring boards
     public Iterable<Board> neighbors() {
-        return null;
+        ArrayList<Board> neighbors = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (board[i][j] == BLANK) {
+                    if (i > 0) {
+                        Board neighbourUp = new Board(board);
+                        neighbourUp.swap(i, j, i - 1, j);
+                        neighbors.add(neighbourUp);
+                    }
+                    if (i < size - 1) {
+                        Board neighbourDown = new Board(board);
+                        neighbourDown.swap(i, j, i + 1, j);
+                        neighbors.add(neighbourDown);
+                    }
+                    if (j < size - 1) {
+                        Board neighbourRight = new Board(board);
+                        neighbourRight.swap(i, j, i, j + 1);
+                        neighbors.add(neighbourRight);
+                    }
+                    if (j > 0) {
+                        Board neighbourLeft = new Board(board);
+                        neighbourLeft.swap(i, j, i, j - 1);
+                        neighbors.add(neighbourLeft);
+                    }
+                }
+            }
+        }
+        return neighbors;
     }
+
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        return this;
+        Board twinBoard = new Board(board);
+        int firRow = 0;
+        int firCol = 0;
+        if (board[firRow][firCol] == BLANK) {
+            firCol++;
+        }
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                if (board[row][col] != board[firRow][firCol] && board[row][col] != BLANK) {
+                    twinBoard.swap(firRow, firCol, row, col);
+                    return twinBoard;
+                }
+            }
+        }
+        return twinBoard;
+    }
+
+    private void swap(int row1, int col1, int row2, int col2) {
+        int temp = board[row1][col1];
+        board[row1][col1] = board[row2][col2];
+        board[row2][col2] = temp;
     }
 
     // unit testing (not graded)
