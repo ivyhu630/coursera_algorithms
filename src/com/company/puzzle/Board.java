@@ -3,6 +3,7 @@ package com.company.puzzle;
 import com.company.percolation.Percolation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Board {
     private int[][] board;
@@ -13,10 +14,13 @@ public class Board {
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
-        board = tiles;
+        // make a deep copy of the tiles
+        board = new int[tiles.length][];
+        for (int i = 0; i < tiles.length; i++) {
+            board[i] = Arrays.copyOf(tiles[i], tiles[i].length);
+        }
         size = board.length;
         goal = new int[size][size];
-
         // construct the goal
         int ct = 1;
         for (int i = 0; i < size; i++) {
@@ -110,7 +114,7 @@ public class Board {
         return true;
     }
 
-    public Iterable<Board> neighbors() {
+    public Iterable<Board> neighbours() {
         ArrayList<Board> neighbors = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -135,6 +139,7 @@ public class Board {
                         neighbourLeft.swap(i, j, i, j - 1);
                         neighbors.add(neighbourLeft);
                     }
+                    break;
                 }
             }
         }
