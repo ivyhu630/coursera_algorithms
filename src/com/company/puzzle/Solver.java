@@ -1,30 +1,30 @@
-package com.company.puzzle;
+ package com.company.puzzle;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
+//import edu.princeton.cs.algs4.Stack;
 
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Stack;
 
 public class Solver {
-    private MinPQ<SearchNode> pq;
-    private MinPQ<SearchNode> pqTwin;
-    private int minMoves = 0;
-    private int minMovesTwin = 0;
-    private ArrayList<Board> solutions = new ArrayList<>();
+    private boolean solvable;
+    private SearchNode originLast;
 
     private class SearchNode {
         final int steps;
         final int priority;
         final SearchNode prevNode;
         final Board currBoard;
+        private  boolean isTwin;
 
-        private SearchNode(Board initial, int steps, SearchNode prevNode) {
+        private SearchNode(Board initial, int steps, SearchNode prevNode, boolean isTwin) {
             this.currBoard = initial;
             this.steps = steps;
             this.priority = steps + initial.manhattan();
             this.prevNode = prevNode;
+            this.isTwin = isTwin;
         }
 
 
@@ -46,32 +46,40 @@ public class Solver {
 
 
     // find a solution to the initial board (using the A* algorithm)
-    public Solver(Board initial) {
+    public  Solver(Board initial) {
+        MinPQ<SearchNode> pq;
+
         if (initial == null) {
             throw new IllegalArgumentException("Board cannot be empty");
         }
-        SearchNode searchNode = new SearchNode(initial, 0, null);
+        solvable = true;
+
+        SearchNode searchNode = new SearchNode(initial, 0, null, false);
+        SearchNode searchNodeTwin = new SearchNode(initial.twin(), 0, null, true);
+
         pq = new MinPQ<>(new SearchNodeCompare());
+
         pq.insert(searchNode);
+        pq.insert(searchNodeTwin);
+
         while (!pq.isEmpty()) {
             SearchNode minNode = pq.delMin();
-            solutions.add(minNode.currBoard);
 
-            for (Board neighbour : minNode.currBoard.neighbours()) {
-                if (neighbour.isGoal()) {
-                    minMoves = minNode.steps + 1;
-                    solutions.add(neighbour);
+            if (!minNode.isTwin) {
+                originLast = minNode;
+            }
 
-                    return;
-                } else {
-                    SearchNode neighbourSearchNode = new SearchNode(neighbour, minNode.steps + 1, minNode);
-                    if (minNode.prevNode != null && neighbour.toString().equals(minNode.prevNode.currBoard.toString())) {
-                        continue;
-                    } else {
+            if (minNode.currBoard.isGoal()) {
+                if (minNode.isTwin) {
+                    solvable = false;
+                }
+                break;
+            }
 
-
-                        pq.insert(neighbourSearchNode);
-                    }
+            for (Board neighbour : minNode.currBoard.neighbors()) {
+                if (minNode.prevNode == null || !minNode.prevNode.currBoard.equals(neighbour)) {
+                    SearchNode neighbourSearchNode = new SearchNode(neighbour, minNode.steps + 1, minNode, minNode.isTwin);
+                    pq.insert(neighbourSearchNode);
                 }
             }
         }
@@ -79,11 +87,7 @@ public class Solver {
 
     // is the initial board solvable? (see below)
     public boolean isSolvable() {
-        if (minMovesTwin > 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return solvable;
     }
 
     // min number of moves to solve initial board; -1 if unsolvable
@@ -91,16 +95,29 @@ public class Solver {
         if (!this.isSolvable()) {
             return -1;
         }
-        return Math.max(this.minMoves, this.minMovesTwin);
+        return originLast.steps;
     }
 
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
         if (!this.isSolvable()) {
             return null;
-        } else {
-            return solutions;
         }
+        Stack<Board> solutions = new Stack<Board>();
+        SearchNode current = originLast;
+        while (current.prevNode != null) {
+            solutions.push(current.currBoard);
+            current = current.prevNode;
+        }
+        solutions.push(current.currBoard);
+
+        Stack<Board> solutions2 = new Stack<Board>();
+
+        while (!solutions.empty()) {
+            solutions2.push(solutions.pop());
+        }
+
+        return solutions2;
     }
 
     // test client (see below)

@@ -1,15 +1,15 @@
-package com.company.puzzle;
-
-import com.company.percolation.Percolation;
+ package com.company.puzzle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Board {
+    private static final int BLANK = 0;
     private int[][] board;
     private int[][] goal;
     private int size;
-    private static final int BLANK = 0;
+    private int hammingCache;
+    private int manhattanCache;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
@@ -21,12 +21,29 @@ public class Board {
         }
         size = board.length;
         goal = new int[size][size];
+
+        hammingCache = 0;
+        manhattanCache = 0;
         // construct the goal
         int ct = 1;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 goal[i][j] = ct;
                 ct++;
+                int currentNum = tiles[i][j];
+                int goalNum = goal[i][j];
+                if (currentNum != 0) {
+                    if (currentNum != ((i * size) + j + 1)) {
+                        hammingCache++;
+                    }
+                }
+                if (currentNum == 0 || currentNum == goalNum) {
+                    continue;
+                }
+                int x = (currentNum - 1) % size;
+                int y = (currentNum - x - 1) / size;
+                manhattanCache += Math.abs(x - j);
+                manhattanCache += Math.abs(y - i);
             }
         }
         goal[size - 1][size - 1] = BLANK;
@@ -40,7 +57,9 @@ public class Board {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 boardPrintOut.append(board[i][j]);
+                boardPrintOut.append(" ");
             }
+            boardPrintOut.setLength(boardPrintOut.length() - 1);
             boardPrintOut.append("\n");
         }
         return boardPrintOut.toString();
@@ -53,36 +72,12 @@ public class Board {
 
     // number of tiles out of place
     public int hamming() {
-        int wrongCT = 0;
-        int i = 0;
-        while (i < size * size - 1) {
-            int n = i % size;
-            int m = i / size;
-            if (i + 1 != board[m][n]) {
-                wrongCT++;
-            }
-            i++;
-        }
-        return wrongCT;
+        return hammingCache;
     }
 
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
-        int res = 0;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                int currentNum = board[i][j];
-                int goalNum = goal[i][j];
-                if (currentNum == 0 || currentNum == goalNum) {
-                    continue;
-                }
-                int x = (currentNum - 1) % size;
-                int y = (currentNum - 1) / size;
-                res += Math.abs(x - j);
-                res += Math.abs(y - i);
-            }
-        }
-        return res;
+        return manhattanCache;
     }
 
 
@@ -96,6 +91,9 @@ public class Board {
 
     // does this board equal y?
     public boolean equals(Object y) {
+        if (y == null) {
+            return false;
+        }
         if (y.getClass() != this.getClass()) {
             return false;
         }
@@ -114,7 +112,7 @@ public class Board {
         return true;
     }
 
-    public Iterable<Board> neighbours() {
+    public Iterable<Board> neighbors() {
         ArrayList<Board> neighbors = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -174,11 +172,9 @@ public class Board {
 
     // unit testing (not graded)
     public static void main(String[] args) {
-        int[][] testTiles = {{1, 0, 3}, {4, 2, 5}, {7, 8, 6}};
+//        int[][] testTiles = {{1, 0, 3}, {4, 2, 5}, {7, 8, 6}};
         int[][] testTiles2 = {{8, 1, 3}, {4, 0, 2}, {7, 6, 5}};
-        Board test1 = new Board(testTiles);
         Board test2 = new Board(testTiles2);
-//        System.out.println(test1.toString());
         System.out.println(test2.toString());
         System.out.println(test2.hamming());
         System.out.println(test2.manhattan());
